@@ -12,8 +12,24 @@ import UIKit
 
 class RxViewLifeCycleDemultiplexer: ViewLifeCycleDemultiplexer, ModalViewLifeCycleProtocol, NavigationViewLifeCycleProtocol
 {
-    // MARK: - ModalViewLifeCycleProtocol observables
+    var rx_viewWillAppear: Observable<Bool> {
+        return _viewWillAppearSubject.asObservable()
+    }
     
+    var rx_viewDidAppear: Observable<Bool> {
+        return _viewDidAppearSubject.asObservable()
+    }
+    
+    var rx_viewWillDisappear: Observable<Bool> {
+        return _viewWillDisappearSubject.asObservable()
+    }
+    
+    var rx_viewDidDisappear: Observable<Bool> {
+        return _viewDidDisappearSubject.asObservable()
+    }
+    
+    // MARK: - ModalViewLifeCycleProtocol observables
+
     var rx_viewWillGetPresented: Observable<Bool> {
         return _viewWillGetPresentedSubject.asObservable()
     }
@@ -87,6 +103,11 @@ class RxViewLifeCycleDemultiplexer: ViewLifeCycleDemultiplexer, ModalViewLifeCyc
         navDelegate = self
     }
 
+    private let _viewWillAppearSubject = PublishSubject<Bool>()
+    private let _viewDidAppearSubject = PublishSubject<Bool>()
+    private let _viewWillDisappearSubject = PublishSubject<Bool>()
+    private let _viewDidDisappearSubject = PublishSubject<Bool>()
+
     private let _viewWillGetPresentedSubject = PublishSubject<Bool>()
     private let _viewDidGetPresentedSubject = PublishSubject<Bool>()
     private let _viewWillGetDismissedSubject = PublishSubject<Bool>()
@@ -105,6 +126,26 @@ class RxViewLifeCycleDemultiplexer: ViewLifeCycleDemultiplexer, ModalViewLifeCyc
     private let _viewWillReappearFromBeneathNavStackSubject = PublishSubject<Bool>()
     private let _viewDidReappearFromBeneathNavStackSubject = PublishSubject<Bool>()
 
+    override func viewWillAppear(viewController vc: UIViewController, animated: Bool) {
+        super.viewWillAppear(viewController: vc, animated: animated)
+        _viewWillAppearSubject.on(.Next(animated))
+    }
+    
+    override func viewDidAppear(viewController vc: UIViewController, animated: Bool) {
+        super.viewDidAppear(viewController: vc, animated: animated)
+        _viewDidAppearSubject.on(.Next(animated))
+    }
+    
+    override func viewWillDisappear(viewController vc: UIViewController, animated: Bool) {
+        super.viewWillDisappear(viewController: vc, animated: animated)
+        _viewWillDisappearSubject.on(.Next(animated))
+    }
+    
+    override func viewDidDisappear(viewController vc: UIViewController, animated: Bool) {
+        super.viewDidDisappear(viewController: vc, animated: animated)
+        _viewDidDisappearSubject.on(.Next(animated))
+    }
+    
     // MARK: - ModalViewLifeCycleProtocol
 
     func viewWillGetPresented(animated: Bool)
