@@ -3,26 +3,15 @@ An RxSwift wrapper around [ViewLifeCycleDemultiplexer](https://github.com/pepasl
 
 ## Example Usage
 
-Here is a minimal usage example.  Create a new "Single View Application" iOS project and replace the contents of `ViewController.swift` with the following:
+Here is a minimal usage example.  Create a new "Single View Application" iOS project and replace the contents of `ViewController.swift` with the code below.
+
+First, boilerplate to hook everything up:
 
 ```swift
 class ViewController: UIViewController, ModalViewLifeCycleProtocol, NavigationViewLifeCycleProtocol
 {
     let rxDemux = RxViewLifeCycleDemultiplexer()
     let disposeBag = DisposeBag()
-    
-    override func viewDidLoad()
-    {
-        super.viewDidLoad()
-
-        rxDemux.rx_viewDidAppear.subscribeNext { (animated) -> Void in
-            debugPrint("rx_viewDidAppear")
-        }.addDisposableTo(disposeBag)
-
-        rxDemux.rx_viewDidDisappearBeneathModal.subscribeNext { (animated) -> Void in
-            debugPrint("rx_viewDidDisappearBeneathModal")
-        }.addDisposableTo(disposeBag)
-    }
     
     override func viewWillAppear(animated: Bool)
     {
@@ -48,4 +37,21 @@ class ViewController: UIViewController, ModalViewLifeCycleProtocol, NavigationVi
         rxDemux.viewDidDisappear(viewController: self, animated: animated)
     }
 }
+```
+
+Now, you can subscribe to the view lifecycle events you are interested in:
+
+```swift
+    override func viewDidLoad()
+    {
+        super.viewDidLoad()
+
+        rxDemux.rx_viewDidAppear.subscribeNext { (animated) -> Void in
+            debugPrint("rx_viewDidAppear")
+        }.addDisposableTo(disposeBag)
+
+        rxDemux.rx_viewDidDisappearBeneathModal.subscribeNext { (animated) -> Void in
+            debugPrint("rx_viewDidDisappearBeneathModal")
+        }.addDisposableTo(disposeBag)
+    }
 ```
